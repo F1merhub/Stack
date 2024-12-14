@@ -142,6 +142,7 @@ int stack_pop(struct stack*stk, stack_elem *pop_elem) { // добавить ре
 
 
 int stack_dump(struct stack*stk) {
+    stk_assert(stk);
     for (int i = 1; i < (stk->size) + 1; ++i) {
         printf("%lg ", stk->data[i]);
     }
