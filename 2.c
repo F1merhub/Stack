@@ -12,58 +12,48 @@ struct stack
     int capacity;
 };
 
-const stack_elem CANARY = (stack_elem)0xBADC0FFEE;
-
-const stack_elem POISON = (stack_elem)0xBAD1ABA
-
-int put_canary(stack *stk)
-{
-    stk->data[0] = CANARY;
-    stk->data[stk->capacity + 1] = CANARY;
-
-    return 0;
-}
-
 int stack_destructor(struct stack* stk) {  // исправить, попортить данные
     free(stk->data);
     stk->data = NULL;
-
     return 0;
 }
 
 int stack_constructor(struct stack * stk, int capacity) {
-    stk->data = (stack_elem *)calloc(capacity + 2, sizeof(stack_elem));
+    stk->data = (stack_elem *)calloc(capacity, sizeof(stack_elem));
 
     if (stk->data == NULL)
     {
-        printf("memory allocation error\n");
-        return ; // добавить название
+        printf("error of working calloc");
+        return -1;
     }
 
     stk->size = 0;
     stk->capacity = capacity;
-    put_canary(stk);
-
     return 0;
 }
 
 int stack_push(struct stack*stk, stack_elem value) {
-    assert(stk->size < stk->capacity);  // убрать поставить ретурн
-    stk->data[stk->size + 1] = value;
+    if (stk->size >= stk->capacity)
+        exit(-1);
+
+    stk->data[stk->size] = value;
     (stk->size)++;
     return 0;
 }
 
-int stack_pop(struct stack*stk) { // возратить элемент
-    assert(stk->size > 0);  // убрать поставить ретурн
+int stack_pop(struct stack*stk) {
+    if (stk->size == 0)
+    {
+        exit(-1);
+    }
+
     stk->size--;
-    *elem_from_stack = stk->data[stk->size + 1];
-    stk->data[stk->size + 1] = POISON;
+    return stk->data[stk->size];
 }
 
 int stack_dump(struct stack*stk) {
     for (int i = 0; i < stk->size; ++i) {
-        printf("%lg ", stk->data[i]);
+        printf("%d ", stk->data[i]);
     }
     printf("\n"
            "%d - capacity\n"
@@ -85,16 +75,8 @@ int verificator(struct stack * stk) {  // добавить канарейку
 int main() {
     struct stack stk;
     stack_constructor(&stk, 6);
-    stack_push(&stk, 3);
-    stack_push(&stk, 4);
-    stack_push(&stk, 4);
-    stack_pop(&stk);
-    stack_pop(&stk);
-    stack_pop(&stk);
-    stack_pop(&stk);
     verificator(&stk);
-    stack_dump(&stk);
+    for (int i = 0; i < 6; ++i)
+        printf("%lg", stk.data[i]);
     return 0;
 }
-
-
