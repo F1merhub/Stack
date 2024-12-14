@@ -1,3 +1,5 @@
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -59,19 +61,19 @@ int verificator(struct stack *stk)
 
 const char* decoder(int error) {
     if (error == STK_OUT_MEMORY)
-        return "memory allocation error";
+        return "memory allocation error\n";
     if (error == STK_NULL_POINTER)
-        return "stack pointer is null";
+        return "stack pointer is null\n";
     if (error == STK_BAD_SIZE)
-        return "stack size < 0";
+        return "stack size < 0\n";
     if (error == STK_BAD_CAPACITY)
-        return "stack capacity <= 0";
+        return "stack capacity <= 0\n";
     if (error == STK_SIZE_LARGER_CAPACITY)
-        return "size > capacity";
+        return "size > capacity\n";
     if (error == BAD_CANARY_1)
-        return "canary1 was changed";
+        return "canary1 was changed\n";
     if (error == BAD_CANARY_2)
-        return "canary2 was changed";
+        return "canary2 was changed\n";
     };
 
 
@@ -87,7 +89,7 @@ void stk_assert(struct stack *stk) {
 
 int stk_null_check(struct stack *stk) {  // много раз встречается
     if (stk == NULL) {
-        printf("stk pointer is NULL");
+        printf("stk pointer is NULL\n");
         assert(0);
     }
     return 0;
@@ -95,6 +97,7 @@ int stk_null_check(struct stack *stk) {  // много раз встречает
 
 int put_canary(struct stack *stk)
 {
+    stk_null_check(stk);
     stk->data[0] = CANARY;
     stk->data[stk->capacity + 1] = CANARY;
 
@@ -120,20 +123,20 @@ int stack_constructor(struct stack * stk, int capacity) {
     stk_null_check(stk);
 
     if (capacity <= 0) {
-        printf("capacity is not positive");
+        printf("capacity is not positive\n");
         assert(0);
     }
 
     stk->data = (stack_elem *)calloc(capacity + 2, sizeof(stack_elem));
     if (&stk == NULL) {
-        printf("memory allocation error");
+        printf("memory allocation error\n");
         assert(0);
     }
 
     stk->size = 0;
     stk->capacity = capacity;
     put_canary(stk);
-    stk_assert(stk);
+    // stk_assert(stk);
 
     return 0;
 }
@@ -142,7 +145,7 @@ int stack_constructor(struct stack * stk, int capacity) {
 int stack_push(struct stack*stk, stack_elem value) {  // добавить с реалоком
     stk_assert(stk);
     if (stk->size  == stk->capacity) {
-        printf("size bigger than capacity");
+        printf("size bigger than capacity\n");
         assert(0);
     }
 
@@ -157,6 +160,10 @@ int stack_push(struct stack*stk, stack_elem value) {  // добавить с р�
 int stack_pop(struct stack*stk, stack_elem *pop_elem) { // добавить реаллок вниз
     stk_assert(stk);
     stk->size--;
+    if (stk->size  == 0) {
+        printf("empty stack\n");
+        assert(0);
+    }
     *pop_elem = stk->data[stk->size + 1];
     stk->data[stk->size + 1] = POISON;
     stk_assert(stk);
@@ -182,11 +189,13 @@ int stack_dump(struct stack*stk) {
 int main() {
     struct stack stk = {NULL, 0, 0};
     stack_elem pop_elem = 0;
-    stack_constructor(&stk, 6);
-    stack_push(&stk, 6);
+    stack_constructor(&stk, 21);
+    for (int i = 0; i < 21; i++)
+    {
+        stack_push(&stk, (i + 1) * 10);
+    }
     stack_dump(&stk);
     stack_destructor(&stk);
     return 0;
 }
-
 
