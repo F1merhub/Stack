@@ -1,30 +1,24 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <assert.h>
 
-int stack_constructor(struct stack * stk, int capacity) {
-
-    if (capacity <= 0) {
-        printf("capacity is not positive");
-        assert(0);
-    }
-
-    stk->data = (stack_elem *)calloc(capacity + 2, sizeof(stack_elem));
-    if (&stk == NULL) {
-        printf("memory allocation error");
-        assert(0);
-    }
-
-    stk->size = 0;
-    stk->capacity = capacity;
-    put_canary(stk);
-    stack_assert(&stk);
-
-    return 0;
-}
-
+enum errorcode
+{
+A = 5,
+B = 1,
+C = 0,
+};
 
 
 int main() {
-    int n = (1<<0);
-    int a = (2<<0);
-    printf("%d\n%d", n, a);
+    // if (1 && B)
+    //     printf("YES");
+    // else
+    //     printf("NO");
+    int k;
+    k = B;
+    char m[5] = "aa";
+    printf("%c", m[k]);
+    return 0;
 }

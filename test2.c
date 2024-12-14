@@ -18,47 +18,71 @@ const stack_elem POISON = (stack_elem)0xBAD1ABA;
 
 enum errorcode
 {
-    STK_OK =                        0;  // нормки
-    STK_OUT_MEMORY =                1;  // calloc не дал память
-    STK_REALLOC_FAILED =            2;
-    STK_EMPTY_STACK =               3;
-    SIZE_LARGER_CAPACITY =          4;  // вышли за размер стэка
-    STK_CAPACITY_NOT_EXSIST =       5;
-    BAD_CAPACITY =                  6;
-    BAD_SIZE =                      7;
-    STK_NULL_POINTER =              8;  // date = 0
-    CANT_REALLOC_TO_FREE =          10;
-    BAD_CANARY_1 =                  11;
-    BAD_CANARY_2 =                  12;
+    STK_OK =                        0,  // все оки
+    STK_OUT_MEMORY =                1,  // calloc не дал память
+    STK_NULL_POINTER =              2,  // date = 0
+    STK_BAD_SIZE =                  3,  // size < 0
+    STK_BAD_CAPACITY =              4,  // capacity <= 0
+    STK_SIZE_LARGER_CAPACITY =      5,  // вышли за размер стэка
+    // REALLOCK_FAIL =                 6;  // не получить расширить стэк
+    BAD_CANARY_1 =                  7,  // левая канарейка
+    BAD_CANARY_2 =                  8,  // правая канарейка
 };
 
-int verificator(stack *stk)
+int verificator(struct stack *stk)
 {
     int error = 0;
-    stk_null_check(stk);
+
+    if (stk == NULL)
+        error = STK_NULL_POINTER;
 
     if (stk->data == NULL)
-        error = error | STK_OUT_MEMORY;
-    else
-    {
-        if (stk->data[0] != CANARY)
-            error = error | BAD_CANARY_1;
-        if (stk->data[stk->capacity + 1] != CANARY)
-            error = error | BAD_CANARY_2;
-    }
-
-    if ((size_t)stk->size > stk->capacity)
-        error = error | STK_SIZE_LARGER_CAPACITY;
+        error = STK_OUT_MEMORY;
 
     if (stk->size < 0)
-        error = error | BAD_SIZE;
+        error = STK_BAD_SIZE;
 
-    if (stk->capacity == 0)
-        error = error | STK_CAPACITY_NOT_EXSIST;
+    if (stk->capacity <= 0)
+        error = STK_BAD_CAPACITY;
+
+    if (stk->size > stk->capacity)
+        error = STK_SIZE_LARGER_CAPACITY;
+
+    if (stk->data[0] != CANARY)
+        error = BAD_CANARY_1;
+
+    if (stk->data[stk->capacity + 1] != CANARY)
+        error = BAD_CANARY_2;
 
     return error;
 }
 
+const char* decoder(int error) {
+    if (error == STK_OUT_MEMORY)
+        return "memory allocation error";
+    if (error == STK_NULL_POINTER)
+        return "stack pointer is null";
+    if (error == STK_BAD_SIZE)
+        return "stack size < 0";
+    if (error == STK_BAD_CAPACITY)
+        return "stack capacity <= 0";
+    if (error == STK_SIZE_LARGER_CAPACITY)
+        return "size > capacity";
+    if (error == BAD_CANARY_1)
+        return "canary1 was changed";
+    if (error == BAD_CANARY_2)
+        return "canary2 was changed";
+    };
+
+
+void stk_assert(struct stack *stk) {
+    int error = verificator(stk);
+    if (error) {
+        printf("%s", decoder(error));
+        assert(0);
+    }
+
+}
 
 
 int stk_null_check(struct stack *stk) {  // много раз встречается
@@ -80,7 +104,7 @@ int put_canary(struct stack *stk)
 
 int stack_destructor(struct stack* stk) {
     stk_null_check(stk);
-    for (int i = 0; i < capacity + 1; ++i)
+    for (int i = 0; i < stk ->capacity + 1; ++i)
         stk->data[i] = POISON;
     free(stk->data);
     stk->data = NULL;
@@ -109,7 +133,7 @@ int stack_constructor(struct stack * stk, int capacity) {
     stk->size = 0;
     stk->capacity = capacity;
     put_canary(stk);
-    stk_assert(&stk);
+    stk_assert(stk);
 
     return 0;
 }
@@ -117,14 +141,14 @@ int stack_constructor(struct stack * stk, int capacity) {
 
 int stack_push(struct stack*stk, stack_elem value) {  // добавить с реалоком
     stk_assert(stk);
-    if (size  == capacity) {
+    if (stk->size  == stk->capacity) {
         printf("size bigger than capacity");
         assert(0);
     }
 
     stk->data[stk->size + 1] = value;
     (stk->size)++;
-    stk_asssert(stk);
+    stk_assert(stk);
 
     return 0;
 }
@@ -160,14 +184,8 @@ int main() {
     stack_elem pop_elem = 0;
     stack_constructor(&stk, 6);
     stack_push(&stk, 6);
-    stack_push(&stk, 6);
-    stack_push(&stk, 6);
-    stack_push(&stk, 6);
-    stack_push(&stk, 6);
-    stack_push(&stk, 6);
-    stack_pop(&stk, &pop_elem);
     stack_dump(&stk);
-    stack_destructor(stk)
+    stack_destructor(&stk);
     return 0;
 }
 
