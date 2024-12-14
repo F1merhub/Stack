@@ -22,7 +22,7 @@ enum errorcode
     STK_OUT_MEMORY =                1;  // calloc не дал память
     STK_REALLOC_FAILED =            2;
     STK_EMPTY_STACK =               3;
-    STK_SIZE_LARGER_CAPACITY =      4;
+    SIZE_LARGER_CAPACITY =          4;  // вышли за размер стэка
     STK_CAPACITY_NOT_EXSIST =       5;
     BAD_CAPACITY =                  6;
     BAD_SIZE =                      7;
@@ -35,7 +35,7 @@ enum errorcode
 int verificator(stack *stk)
 {
     int error = 0;
-    stkNullCheck(stk);
+    stk_null_check(stk);
 
     if (stk->data == NULL)
         error = error | STK_OUT_MEMORY;
@@ -86,11 +86,14 @@ int stack_destructor(struct stack* stk) {
     stk->data = NULL;
     stk->capacity = 0;
     stk->size = 0;
+
     return 0;
 }
 
 
 int stack_constructor(struct stack * stk, int capacity) {
+
+    stk_null_check(stk);
 
     if (capacity <= 0) {
         printf("capacity is not positive");
@@ -112,10 +115,17 @@ int stack_constructor(struct stack * stk, int capacity) {
 }
 
 
-int stack_push(struct stack*stk, stack_elem value) {
-    assert(stk->size < stk->capacity);  // сделать проверки
+int stack_push(struct stack*stk, stack_elem value) {  // добавить с реалоком
+    stk_assert(stk);
+    if (size + 1 == capacity) {
+        printf("size bigger than capacity");
+        assert(0);
+    }
+
     stk->data[stk->size + 1] = value;
     (stk->size)++;
+    stk_asssert(stk);
+    
     return 0;
 }
 
