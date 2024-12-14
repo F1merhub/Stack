@@ -84,6 +84,8 @@ int verificator(struct stack * stk) {  // добавить канарейку
         return -1;
 }
 
+stack_assert(struct stack *stk, ) {}
+
 int main() {
     struct stack stk = {NULL, 0, 0};
     stack_elem pop_elem = 0;

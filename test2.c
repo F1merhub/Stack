@@ -16,6 +16,57 @@ const stack_elem CANARY = (stack_elem)0xBADC0FFEE;
 
 const stack_elem POISON = (stack_elem)0xBAD1ABA;
 
+enum errorcode
+{
+    STK_OK =                        0;  // нормки
+    STK_OUT_MEMORY =                1;  // calloc не дал память
+    STK_REALLOC_FAILED =            2;
+    STK_EMPTY_STACK =               3;
+    STK_SIZE_LARGER_CAPACITY =      4;
+    STK_CAPACITY_NOT_EXSIST =       5;
+    BAD_CAPACITY =                  6;
+    BAD_SIZE =                      7;
+    STK_NULL_POINTER =              8;  // date = 0
+    CANT_REALLOC_TO_FREE =          10;
+    BAD_CANARY_1 =                  11;
+    BAD_CANARY_2 =                  12;
+};
+
+int verificator(stack *stk)
+{
+    int error = 0;
+    stkNullCheck(stk);
+
+    if (stk->data == NULL)
+        error = error | STK_OUT_MEMORY;
+    else
+    {
+        if (stk->data[0] != CANARY)
+            error = error | BAD_CANARY_1;
+        if (stk->data[stk->capacity + 1] != CANARY)
+            error = error | BAD_CANARY_2;
+    }
+
+    if ((size_t)stk->size > stk->capacity)
+        error = error | STK_SIZE_LARGER_CAPACITY;
+
+    if (stk->size < 0)
+        error = error | BAD_SIZE;
+
+    if (stk->capacity == 0)
+        error = error | STK_CAPACITY_NOT_EXSIST;
+
+    return error;
+}
+
+
+int stk_null_check(struct stack *stk) {  // много раз встречается
+    if (stk == NULL) {
+        printf("stk pointer is NULL");
+        assert(0);
+    }
+    return 0;
+}
 
 int put_canary(struct stack *stk)
 {
@@ -26,24 +77,29 @@ int put_canary(struct stack *stk)
 }
 
 int stack_destructor(struct stack* stk) {  // исправить, попортить данные
+    stk_null_check(stk)
     free(stk->data);                       // сделать проверки
     stk->data = NULL;
-
     return 0;
 }
 
-int stack_constructor(struct stack * stk, int capacity) {  // сделать нормальную проверку
-    stk->data = (stack_elem *)calloc(capacity + 2, sizeof(stack_elem));
+int stack_constructor(struct stack * stk, int capacity) {
 
-    if (stk->data == NULL)
-    {
-        printf("memory allocation error\n");
-        return -1; // добавить название
+    if (capacity <= 0) {
+        printf("capacity is not positive");
+        assert(0);
+    }
+
+    stk->data = (stack_elem *)calloc(capacity + 2, sizeof(stack_elem));
+    if (&stk == NULL) {
+        printf("memory allocation error");
+        assert(0);
     }
 
     stk->size = 0;
     stk->capacity = capacity;
     put_canary(stk);
+    stack_assert(&stk);
 
     return 0;
 }
@@ -75,15 +131,6 @@ int stack_dump(struct stack*stk) {
     return 0;
 }
 
-int verificator(struct stack * stk) {  // добавить канарейку
-    if (stk == NULL)
-        return -1;
-    if (stk->data == NULL)
-        return -1;
-    if ((stk->size >= stk->capacity) || (stk->size <= 0))
-        return -1;
-}
-
 int main() {
     struct stack stk = {NULL, 0, 0};
     stack_elem pop_elem = 0;
@@ -95,8 +142,6 @@ int main() {
     stack_push(&stk, 6);
     stack_push(&stk, 6);
     stack_pop(&stk, &pop_elem);
-    // printf("%lg", stk.data[1]);
-    // verificator(&stk);
     stack_dump(&stk);
     stack_destructor(stk)
     return 0;
