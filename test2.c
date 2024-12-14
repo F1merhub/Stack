@@ -60,6 +60,7 @@ int verificator(stack *stk)
 }
 
 
+
 int stk_null_check(struct stack *stk) {  // много раз встречается
     if (stk == NULL) {
         printf("stk pointer is NULL");
@@ -76,12 +77,18 @@ int put_canary(struct stack *stk)
     return 0;
 }
 
-int stack_destructor(struct stack* stk) {  // исправить, попортить данные
-    stk_null_check(stk)
-    free(stk->data);                       // сделать проверки
+
+int stack_destructor(struct stack* stk) {
+    stk_null_check(stk);
+    for (int i = 0; i < capacity + 1; ++i)
+        stk->data[i] = POISON;
+    free(stk->data);
     stk->data = NULL;
+    stk->capacity = 0;
+    stk->size = 0;
     return 0;
 }
+
 
 int stack_constructor(struct stack * stk, int capacity) {
 
@@ -99,10 +106,11 @@ int stack_constructor(struct stack * stk, int capacity) {
     stk->size = 0;
     stk->capacity = capacity;
     put_canary(stk);
-    stack_assert(&stk);
+    stk_assert(&stk);
 
     return 0;
 }
+
 
 int stack_push(struct stack*stk, stack_elem value) {
     assert(stk->size < stk->capacity);  // сделать проверки
@@ -111,6 +119,7 @@ int stack_push(struct stack*stk, stack_elem value) {
     return 0;
 }
 
+
 int stack_pop(struct stack*stk, stack_elem *pop_elem) { // возратить элемент
     assert(stk->size > 0);  // нормальная проверка
     stk->size--;
@@ -118,6 +127,7 @@ int stack_pop(struct stack*stk, stack_elem *pop_elem) { // возратить э
     stk->data[stk->size + 1] = POISON;
     return 0;
 }
+
 
 int stack_dump(struct stack*stk) {
     for (int i = 1; i < (stk->size) + 1; ++i) {
@@ -130,6 +140,7 @@ int stack_dump(struct stack*stk) {
            stk->capacity, stk->size, stk->data);
     return 0;
 }
+
 
 int main() {
     struct stack stk = {NULL, 0, 0};
