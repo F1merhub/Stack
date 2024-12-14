@@ -117,7 +117,7 @@ int stack_constructor(struct stack * stk, int capacity) {
 
 int stack_push(struct stack*stk, stack_elem value) {  // добавить с реалоком
     stk_assert(stk);
-    if (size + 1 == capacity) {
+    if (size  == capacity) {
         printf("size bigger than capacity");
         assert(0);
     }
@@ -125,16 +125,18 @@ int stack_push(struct stack*stk, stack_elem value) {  // добавить с р�
     stk->data[stk->size + 1] = value;
     (stk->size)++;
     stk_asssert(stk);
-    
+
     return 0;
 }
 
 
-int stack_pop(struct stack*stk, stack_elem *pop_elem) { // возратить элемент
-    assert(stk->size > 0);  // нормальная проверка
+int stack_pop(struct stack*stk, stack_elem *pop_elem) { // добавить реаллок вниз
+    stk_assert(stk);
     stk->size--;
     *pop_elem = stk->data[stk->size + 1];
     stk->data[stk->size + 1] = POISON;
+    stk_assert(stk);
+
     return 0;
 }
 
