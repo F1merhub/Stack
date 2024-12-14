@@ -1,23 +1,17 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
-
-typedef double stack_elem;
-
-struct stack
-{
-    stack_elem * data;
-    int size;
-    int capacity;
-};
+#include "main.h"
 
 int main() {
-    struct stack stk;
-    int capacity = 0;
-    scanf("%d", &capacity);
 
-
+    struct stack stk = {NULL, 0, 0};
+    stack_elem pop_elem = 0;
+    stack_constructor(&stk, 21);
+    for (int i = 0; i < 21; i++)
+    {
+        stack_push(&stk, (i + 1) * 10);
+    }
+    stack_dump(&stk);
+    stack_destructor(&stk);
 
     return 0;
 }
+

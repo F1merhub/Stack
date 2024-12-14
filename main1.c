@@ -1,4 +1,33 @@
-#include "main.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <assert.h>
+
+typedef double stack_elem;
+
+struct stack
+{
+    stack_elem* data;
+    int size;
+    int capacity;
+};
+
+enum errorcode
+{
+    STK_OK =                        0,  // все оки
+    STK_OUT_MEMORY =                1,  // calloc не дал память
+    STK_NULL_POINTER =              2,  // date = 0
+    STK_BAD_SIZE =                  3,  // size < 0
+    STK_BAD_CAPACITY =              4,  // capacity <= 0
+    STK_SIZE_LARGER_CAPACITY =      5,  // вышли за размер стэка
+    // REALLOCK_FAIL =              6,  // не получилось расширить стэк
+    BAD_CANARY_1 =                  7,  // левая канарейка
+    BAD_CANARY_2 =                  8,  // правая канарейка
+};
+
+const stack_elem CANARY = (stack_elem)0xBADC0FFEE;
+
+const stack_elem POISON = (stack_elem)0xBAD1ABA;
 
 int verificator(struct stack *stk)
 {
@@ -129,11 +158,11 @@ int stack_push(struct stack*stk, stack_elem value) {  // добавить с р�
 
 int stack_pop(struct stack*stk, stack_elem *pop_elem) { // добавить реаллок вниз
     stk_assert(stk);
-    stk->size--;
     if (stk->size  == 0) {
         printf("empty stack\n");
         assert(0);
     }
+    stk->size--;
     *pop_elem = stk->data[stk->size + 1];
     stk->data[stk->size + 1] = POISON;
     stk_assert(stk);
@@ -155,4 +184,20 @@ int stack_dump(struct stack*stk) {
 
     return 0;
 }
+
+int main() {
+
+    struct stack stk = {NULL, 0, 0};
+    stack_elem pop_elem = 0;
+    stack_constructor(&stk, 10);
+    stack_push(&stk, 5);
+    stack_push(&stk, 5);
+    stack_pop(&stk, &pop_elem);
+    stack_pop(&stk, &pop_elem);
+    stack_dump(&stk);
+    stack_destructor(&stk);
+
+    return 0;
+}
+
 
