@@ -48,8 +48,8 @@ int stack_pop(struct stack*stk, stack_elem *pop_elem);
 
 int stack_dump(struct stack*stk);
 
-extern const stack_elem CANARY = (stack_elem)0xBADC0FFEE;
+const stack_elem CANARY = (stack_elem)0xBADC0FFEE;
 
-extern const stack_elem POISON = (stack_elem)0xBAD1ABA;
+const stack_elem POISON = (stack_elem)0xBAD1ABA;
 
 #endif

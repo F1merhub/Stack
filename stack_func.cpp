@@ -52,8 +52,8 @@ const char* decoder(int error) {
 void stk_assert(struct stack *stk) {
     int error = verificator(stk);
     if (error) {
-        printf("%s", decoder(error));
-        assert(0);
+        printf("%s", decoder(error)); // TODO dump here
+        assert(0); // TODO return
     }
 }
 
@@ -113,7 +113,9 @@ int stack_constructor(struct stack * stk, int capacity) {
 
 
 int stack_push(struct stack*stk, stack_elem value) {  // добавить с реалоком
-    stk_assert(stk);
+    if (stk_assert(stk) == ERROR)
+        return dgdfg;
+        
     if (stk->size  == stk->capacity) {
         printf("size bigger than capacity\n");
         assert(0);

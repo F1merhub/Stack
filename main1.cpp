@@ -62,11 +62,11 @@ const char* decoder(int error) {
 
     if (error == STK_OUT_MEMORY)
         return "memory allocation error\n";
-    if (error == STK_NULL_POINTER)
+    elif (error == STK_NULL_POINTER)
         return "stack pointer is null\n";
-    if (error == STK_BAD_SIZE)
+    elif (error == STK_BAD_SIZE)
         return "stack size < 0\n";
-    if (error == STK_BAD_CAPACITY)
+     (error == STK_BAD_CAPACITY)
         return "stack capacity <= 0\n";
     if (error == STK_SIZE_LARGER_CAPACITY)
         return "size > capacity\n";
@@ -75,7 +75,7 @@ const char* decoder(int error) {
     if (error == BAD_CANARY_2)
         return "canary2 was changed\n";
 
-    };
+    }
 
 
 void stk_assert(struct stack *stk) {
