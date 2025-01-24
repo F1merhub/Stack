@@ -196,7 +196,7 @@ int main() {
     stack_pop(&stk, &pop_elem);
     stack_dump(&stk);
     stack_destructor(&stk);
-
+    stack_destructor()
     return 0;
 }
 

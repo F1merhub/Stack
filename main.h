@@ -17,7 +17,7 @@ struct stack
 
 enum errorcode
 {
-    STK_OK =                        0,  // все оки
+    STK_OK =                        0,  // все ок
     STK_OUT_MEMORY =                1,  // calloc не дал память
     STK_NULL_POINTER =              2,  // date = 0
     STK_BAD_SIZE =                  3,  // size < 0
