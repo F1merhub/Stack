@@ -10,7 +10,7 @@ typedef double stack_elem;
 
 struct stack
 {
-    stack_elem* data;
+    stack_elem *data;
     int size;
     int capacity;
 };

@@ -134,7 +134,7 @@ int stack_constructor(struct stack * stk, int capacity) {
     stk->size = 0;
     stk->capacity = capacity;
     put_canary(stk);
-    // stk_assert(stk);
+    stk_assert(stk);
 
     return 0;
 }
