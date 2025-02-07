@@ -8,7 +8,7 @@ int verificator(struct stack *stk)
     if (stk == NULL)
         error = STK_NULL_POINTER;
 
-    if (stk->data == NULL) 
+    if (stk->data == NULL)
         error = STK_OUT_MEMORY;
 
     if (stk->size < 0)
@@ -52,8 +52,8 @@ const char* decoder(int error) {
 void stk_assert(struct stack *stk) {
     int error = verificator(stk);
     if (error) {
-        printf("%s", decoder(error)); // TODO dump here
-        assert(0); // TODO return
+        printf("%s", decoder(error));
+        assert(0);
     }
 }
 
@@ -131,11 +131,11 @@ int stack_push(struct stack*stk, stack_elem value) {  // добавить с р�
 
 int stack_pop(struct stack*stk, stack_elem *pop_elem) { // добавить реаллок вниз
     stk_assert(stk);
-    stk->size--;
     if (stk->size  == 0) {
         printf("empty stack\n");
         assert(0);
     }
+    stk->size--;
     *pop_elem = stk->data[stk->size + 1];
     stk->data[stk->size + 1] = POISON;
     stk_assert(stk);
