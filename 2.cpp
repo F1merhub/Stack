@@ -8,8 +8,8 @@ typedef double stack_elem;   //FIXME - Просмотреть, где можно
 struct stack
 {
     stack_elem* data;
-    size_t size;
-    size_t capacity;
+    int size;
+    int capacity;
 };
 
 const stack_elem CANARY = (stack_elem)0xBADC0FFEE;
@@ -29,7 +29,7 @@ enum errorcode
     BAD_CANARY_2 =                  8,  // правая канарейка
 };
 
-int verificator(struct stack *stk) // NOTE чек
+int verificator(struct stack *stk)
 {
     int error = 0;
 
@@ -57,7 +57,7 @@ int verificator(struct stack *stk) // NOTE чек
     return error;
 }
 
-const char* decoder(int error) { //NOTE чек
+const char* decoder(int error) {
     switch(error) {
         case(STK_OUT_MEMORY):
             return "memory allocation error\n";
@@ -78,19 +78,19 @@ const char* decoder(int error) { //NOTE чек
     }
 }
 
-int stack_dump(struct stack *stk) { //NOTE чек
-    for (size_t i = 1; i < (stk->size) + 1; ++i) {
+int stack_dump(struct stack *stk) {
+    for (int i = 1; i < (stk->size) + 1; ++i) {
         printf("%lg ", stk->data[i]);
     }
     printf("\n"
-           "%lu - capacity\n"
-           "%lu - size\n"
+           "%d- capacity\n"
+           "%d - size\n"
            "%p - pointer on data\n",
            stk->capacity, stk->size, stk->data);
     return 0;
 }
 
-int stk_assert(struct stack *stk) { //NOTE чек
+int stk_assert(struct stack *stk) {
     int error = verificator(stk);
     if (error) {
         printf("%s", decoder(error));
@@ -101,7 +101,7 @@ int stk_assert(struct stack *stk) { //NOTE чек
 }
 
 
-int stk_null_check(struct stack *stk) { //NOTE чек
+int stk_null_check(struct stack *stk) {
     if (stk == NULL) {
         printf("stk pointer is NULL\n");
         assert(0);
@@ -109,7 +109,7 @@ int stk_null_check(struct stack *stk) { //NOTE чек
     return 0;
 }
 
-int put_canary(struct stack *stk)//NOTE чек
+int put_canary(struct stack *stk)
 {
     stk_null_check(stk);
     stk->data[0] = CANARY;
@@ -119,9 +119,9 @@ int put_canary(struct stack *stk)//NOTE чек
 }
 
 
-int stack_destructor(struct stack* stk) {//NOTE чек
+int stack_destructor(struct stack* stk) {
     stk_null_check(stk);
-    for (size_t i = 0; i < stk->capacity + 1; ++i)
+    for (int i = 0; i < stk->capacity + 1; ++i)
         stk->data[i] = POISON;
     free(stk->data);
     stk->data = NULL;
@@ -132,7 +132,7 @@ int stack_destructor(struct stack* stk) {//NOTE чек
 }
 
 
-int stack_constructor(struct stack * stk, size_t capacity) {
+int stack_constructor(struct stack * stk, int capacity) {
 
     stk_null_check(stk);
 
@@ -141,7 +141,7 @@ int stack_constructor(struct stack * stk, size_t capacity) {
         assert(0);
     }
 
-    stk->data = (stack_elem *)calloc(capacity + 2, sizeof(stack_elem));
+    stk->data = (stack_elem *)calloc(capacity + 2, sizeof(stack_elem));//NOTE что плохого может произойти, если в calloc поставить int, а не size_t
     if (&stk == NULL) {
         printf("memory allocation error\n");
         assert(0);
@@ -156,7 +156,7 @@ int stack_constructor(struct stack * stk, size_t capacity) {
 }
 
 
-int stack_push(struct stack*stk, stack_elem value) {  // добавить с реалоком
+int stack_push(struct stack *stk, stack_elem value) {  // NOTE добавить с реалоком
     stk_assert(stk);
     if (stk->size  == stk->capacity) {
         printf("size bigger than capacity\n");
@@ -171,7 +171,7 @@ int stack_push(struct stack*stk, stack_elem value) {  // добавить с р�
 }
 
 
-int stack_pop(struct stack *stk, stack_elem *pop_elem) { // добавить реаллок вниз
+int stack_pop(struct stack *stk, stack_elem *pop_elem) { // NOTE добавить реаллок вниз
     stk_assert(stk);
     if (stk->size  == 0) {
         printf("empty stack\n");
