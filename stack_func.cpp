@@ -8,7 +8,7 @@ int verificator(struct stack *stk)
     if (stk == NULL)
         error = STK_NULL_POINTER;
 
-    if (stk->data == NULL)
+    if (stk->data == NULL) 
         error = STK_OUT_MEMORY;
 
     if (stk->size < 0)
@@ -115,7 +115,7 @@ int stack_constructor(struct stack * stk, int capacity) {
 int stack_push(struct stack*stk, stack_elem value) {  // добавить с реалоком
     if (stk_assert(stk) == ERROR)
         return dgdfg;
-        
+
     if (stk->size  == stk->capacity) {
         printf("size bigger than capacity\n");
         assert(0);

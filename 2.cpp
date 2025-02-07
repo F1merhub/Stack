@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include <stdio.h> // best option
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
@@ -12,6 +12,10 @@ struct stack
     int capacity;
 };
 
+const stack_elem CANARY = (stack_elem)0xBADC0FFEE;
+
+const stack_elem POISON = (stack_elem)0xBAD1ABA;
+
 enum errorcode
 {
     STK_OK =                        0,  // все оки
@@ -20,18 +24,13 @@ enum errorcode
     STK_BAD_SIZE =                  3,  // size < 0
     STK_BAD_CAPACITY =              4,  // capacity <= 0
     STK_SIZE_LARGER_CAPACITY =      5,  // вышли за размер стэка
-    // REALLOCK_FAIL =              6,  // не получилось расширить стэк
+    // REALLOCK_FAIL =                 6;  // не получить расширить стэк
     BAD_CANARY_1 =                  7,  // левая канарейка
     BAD_CANARY_2 =                  8,  // правая канарейка
 };
 
-const stack_elem CANARY = (stack_elem)0xBADC0FFEE;
-
-const stack_elem POISON = (stack_elem)0xBAD1ABA;
-
 int verificator(struct stack *stk)
 {
-
     int error = 0;
 
     if (stk == NULL)
@@ -59,14 +58,13 @@ int verificator(struct stack *stk)
 }
 
 const char* decoder(int error) {
-
     if (error == STK_OUT_MEMORY)
         return "memory allocation error\n";
-    elif (error == STK_NULL_POINTER)
+    if (error == STK_NULL_POINTER)
         return "stack pointer is null\n";
-    elif (error == STK_BAD_SIZE)
+    if (error == STK_BAD_SIZE)
         return "stack size < 0\n";
-     (error == STK_BAD_CAPACITY)
+    if (error == STK_BAD_CAPACITY)
         return "stack capacity <= 0\n";
     if (error == STK_SIZE_LARGER_CAPACITY)
         return "size > capacity\n";
@@ -74,8 +72,7 @@ const char* decoder(int error) {
         return "canary1 was changed\n";
     if (error == BAD_CANARY_2)
         return "canary2 was changed\n";
-
-    }
+    };
 
 
 void stk_assert(struct stack *stk) {
@@ -84,6 +81,7 @@ void stk_assert(struct stack *stk) {
         printf("%s", decoder(error));
         assert(0);
     }
+
 }
 
 
@@ -95,7 +93,8 @@ int stk_null_check(struct stack *stk) {  // много раз встречает
     return 0;
 }
 
-int put_canary(struct stack *stk) {
+int put_canary(struct stack *stk)
+{
     stk_null_check(stk);
     stk->data[0] = CANARY;
     stk->data[stk->capacity + 1] = CANARY;
@@ -135,7 +134,7 @@ int stack_constructor(struct stack * stk, int capacity) {
     stk->size = 0;
     stk->capacity = capacity;
     put_canary(stk);
-    // stk_assert(stk);
+    stk_assert(stk);
 
     return 0;
 }
@@ -181,23 +180,20 @@ int stack_dump(struct stack*stk) {
            "%d - size\n"
            "%p - pointer on data\n",
            stk->capacity, stk->size, stk->data);
-
     return 0;
 }
+
 
 int main() {
-
     struct stack stk = {NULL, 0, 0};
     stack_elem pop_elem = 0;
-    stack_constructor(&stk, 10);
-    stack_push(&stk, 5);
-    stack_push(&stk, 5);
-    stack_pop(&stk, &pop_elem);
-    stack_pop(&stk, &pop_elem);
+    stack_constructor(&stk, 21);
+    for (int i = 0; i < 21; i++)
+    {
+        stack_push(&stk, (i + 1) * 10);
+    }
     stack_dump(&stk);
     stack_destructor(&stk);
-    stack_destructor()
     return 0;
 }
-
 
