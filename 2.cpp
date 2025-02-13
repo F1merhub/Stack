@@ -26,7 +26,6 @@ enum errorcode
     STK_BAD_SIZE =                  3,  // size < 0
     STK_BAD_CAPACITY =              4,  // capacity <= 0
     STK_SIZE_LARGER_CAPACITY =      5,  // вышли за размер стэка
-    // REALLOCK_FAIL =                 6;  // не получить расширить стэк
     BAD_CANARY_1 =                  7,  // левая канарейка
     BAD_CANARY_2 =                  8,  // правая канарейка
 };
