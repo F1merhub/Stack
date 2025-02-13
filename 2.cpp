@@ -12,6 +12,8 @@ struct stack
     int capacity;
 };
 
+const int increase_coefficient = 20;
+
 const stack_elem CANARY = (stack_elem)0xBADC0FFEE;
 
 const stack_elem POISON = (stack_elem)0xBAD1ABA;
@@ -83,7 +85,7 @@ int stack_dump(struct stack *stk) {
         printf("%lg ", stk->data[i]);
     }
     printf("\n"
-           "%d- capacity\n"
+           "%d - capacity\n"
            "%d - size\n"
            "%p - pointer on data\n",
            stk->capacity, stk->size, stk->data);
@@ -142,7 +144,7 @@ int stack_constructor(struct stack * stk, int capacity) {
     }
 
     stk->data = (stack_elem *)calloc(capacity + 2, sizeof(stack_elem));//NOTE что плохого может произойти, если в calloc поставить int, а не size_t
-    if (&stk == NULL) {
+    if (stk->data == NULL) {
         printf("memory allocation error\n");
         assert(0);
     }
@@ -155,12 +157,29 @@ int stack_constructor(struct stack * stk, int capacity) {
     return 0;
 }
 
+int realloc_up(struct stack *stk) {
+    stk_assert(stk);
+    if (increase_coefficient <= 0) {
+        printf("change increase_coefficient\n");
+        assert(0);
+    }
+    stack_elem *new_ptr = (stack_elem *)realloc(stk->data, (stk -> capacity + 2 + increase_coefficient) * sizeof(stack_elem));
+    if(new_ptr == NULL) {
+        printf("memory reallocation error\n");
+        assert(0);
+    }
+    stk->data = new_ptr;
+    stk->capacity = stk->capacity + increase_coefficient;
+    stk->data[stk->capacity + 1] = CANARY;
+    return 0;
+}
 
-int stack_push(struct stack *stk, stack_elem value) {  // NOTE добавить с реалоком
+
+
+int stack_push(struct stack *stk, stack_elem value) {
     stk_assert(stk);
     if (stk->size  == stk->capacity) {
-        printf("size bigger than capacity\n");
-        assert(0);
+        realloc_up(stk);
     }
 
     stk->data[stk->size + 1] = value;
@@ -169,7 +188,6 @@ int stack_push(struct stack *stk, stack_elem value) {  // NOTE добавить 
 
     return 0;
 }
-
 
 int stack_pop(struct stack *stk, stack_elem *pop_elem) { // NOTE добавить реаллок вниз
     stk_assert(stk);
@@ -187,11 +205,9 @@ int stack_pop(struct stack *stk, stack_elem *pop_elem) { // NOTE добавит�
 
 int main() {
     struct stack stk = {NULL, 0, 0};
-    stack_elem pop_elem = 0;
-    stack_constructor(&stk, -20);
-    for (int i = 0; i < 21; i++)
-    {
-        stack_push(&stk, (i + 1) * 10);
+    stack_constructor(&stk, 3);
+    for (int i = 1; i < 5; i++) {
+        stack_push(&stk, i);
     }
     stack_dump(&stk);
     stack_destructor(&stk);

@@ -98,7 +98,7 @@ int stack_constructor(struct stack * stk, int capacity) {
     }
 
     stk->data = (stack_elem *)calloc(capacity + 2, sizeof(stack_elem));
-    if (&stk == NULL) {
+    if (stk->data == NULL) {
         printf("memory allocation error\n");
         assert(0);
     }
